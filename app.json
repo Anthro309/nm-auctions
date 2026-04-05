@@ -1,0 +1,41 @@
+{
+  "expo": {
+    "name": "NM Auctions",
+    "slug": "nm-auctions",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#1A3A5C"
+    },
+    "assetBundlePatterns": ["**/*"],
+    "ios": {
+      "supportsTablet": false,
+      "bundleIdentifier": "com.nmauctions.app",
+      "buildNumber": "1"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#1A3A5C"
+      },
+      "package": "com.nmauctions.app",
+      "versionCode": 1,
+      "permissions": ["INTERNET", "VIBRATE", "RECEIVE_BOOT_COMPLETED"]
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "YOUR_EAS_PROJECT_ID"
+      }
+    },
+    "owner": "YOUR_EXPO_USERNAME",
+    "description": "NM Auctions — Innovative auction, liquidation & estate sales in Southern New Mexico. Bid on fine jewelry, art, furniture, vehicles, Navajo & Zuni jewelry, coins and more. Weekly online auctions serving Las Cruces and beyond.",
+    "keywords": ["auction", "estate sale", "liquidation", "Las Cruces", "New Mexico", "jewelry", "antiques", "bidding", "NM Auctions"]
+  }
+}
