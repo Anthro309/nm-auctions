@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { View, Text, ScrollView, TouchableOpacity, StyleSheet, Image } from 'react-native';
+import React, { useState, useRef } from 'react';
+import { View, Text, ScrollView, TouchableOpacity, StyleSheet, Image, TextInput } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -10,10 +10,22 @@ import AuctionCard from '../components/AuctionCard';
 export default function HomeScreen() {
   const navigation = useNavigation();
   const [activeCat, setActiveCat] = useState(null);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [searchFocused, setSearchFocused] = useState(false);
+  const searchRef = useRef(null);
 
-  const filtered = activeCat
-    ? AUCTIONS.filter((a) => a.category === activeCat)
-    : AUCTIONS;
+  const filtered = (() => {
+    let base = activeCat ? AUCTIONS.filter((a) => a.category === activeCat) : AUCTIONS;
+    if (!searchQuery.trim()) return base;
+    const q = searchQuery.toLowerCase();
+    return base.filter(
+      (a) =>
+        a.title.toLowerCase().includes(q) ||
+        a.subtitle.toLowerCase().includes(q) ||
+        a.category.toLowerCase().includes(q) ||
+        a.desc.toLowerCase().includes(q)
+    );
+  })();
 
   return (
     <View style={styles.flex}>
@@ -28,9 +40,28 @@ export default function HomeScreen() {
             <Text style={styles.notifText}>🔔  3</Text>
           </TouchableOpacity>
         </View>
-        <TouchableOpacity style={styles.searchBar} activeOpacity={0.75}>
+        <TouchableOpacity
+          style={[styles.searchBar, searchFocused && styles.searchBarFocused]}
+          activeOpacity={1}
+          onPress={() => searchRef.current?.focus()}
+        >
           <Text style={styles.searchIcon}>🔍</Text>
-          <Text style={styles.searchHint}>Search auctions, lots & items…</Text>
+          <TextInput
+            ref={searchRef}
+            value={searchQuery}
+            onChangeText={setSearchQuery}
+            onFocus={() => setSearchFocused(true)}
+            onBlur={() => setSearchFocused(false)}
+            placeholder="Search auctions, lots & items…"
+            placeholderTextColor="rgba(255,255,255,0.5)"
+            style={styles.searchInput}
+            returnKeyType="search"
+          />
+          {searchQuery.length > 0 && (
+            <TouchableOpacity onPress={() => setSearchQuery('')} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
+              <Text style={styles.searchClear}>✕</Text>
+            </TouchableOpacity>
+          )}
         </TouchableOpacity>
       </SafeAreaView>
 
@@ -81,7 +112,9 @@ export default function HomeScreen() {
         {/* Auctions */}
         <View style={styles.sectionRow}>
           <Text style={styles.sectionLabel}>
-            {activeCat ?? 'Active Auctions'}
+            {searchQuery.trim()
+              ? `Results for "${searchQuery.trim()}"`
+              : activeCat ?? 'Active Auctions'}
           </Text>
           <Text style={styles.sectionCount}>({filtered.length})</Text>
         </View>
@@ -127,11 +160,19 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(255,255,255,0.13)', borderRadius: radius.md,
     marginHorizontal: spacing.xl, marginTop: 14, marginBottom: spacing.lg,
     paddingHorizontal: 14, paddingVertical: 11,
+    borderWidth: 1, borderColor: 'transparent',
+  },
+  searchBarFocused: {
+    backgroundColor: 'rgba(255,255,255,0.18)',
+    borderColor: 'rgba(200,146,42,0.6)',
   },
   searchIcon: { fontSize: 15 },
-  searchHint: {
-    color: 'rgba(255,255,255,0.6)', fontSize: 13,
-    fontFamily: fonts.body.regular,
+  searchInput: {
+    flex: 1, color: 'white', fontSize: 13,
+    fontFamily: fonts.body.regular, paddingVertical: 0,
+  },
+  searchClear: {
+    color: 'rgba(255,255,255,0.5)', fontSize: 14, paddingLeft: 4,
   },
   scroll: { flex: 1 },
   scrollContent: { paddingBottom: 36 },

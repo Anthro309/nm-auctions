@@ -1,14 +1,36 @@
 import React, { useState } from 'react';
-import { View, Text, FlatList, TouchableOpacity, StyleSheet, Alert } from 'react-native';
+import { View, Text, FlatList, TouchableOpacity, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useNavigation } from '@react-navigation/native';
 import { colors, fonts, spacing, radius } from '../theme';
-import { MY_BIDS } from '../data/mockData';
+import { MY_BIDS, LOTS, AUCTIONS } from '../data/mockData';
 import BidCard from '../components/BidCard';
 
 const TABS = ['All', 'Winning', 'Outbid'];
 
 export default function MyBidsScreen() {
+  const navigation = useNavigation();
   const [tab, setTab] = useState('All');
+
+  const navigateToLot = (bid) => {
+    const lot = LOTS.find((l) => l.id === bid.id) || {
+      id: bid.id,
+      auctionId: null,
+      number: `Lot ${bid.id}`,
+      title: bid.title,
+      emoji: bid.emoji,
+      currentBid: bid.currentBid,
+      bids: 0,
+      condition: 'Good',
+      ends: bid.ends,
+      desc: 'Visit nmestateauctions.com for full lot details.',
+    };
+    const auction =
+      (lot.auctionId && AUCTIONS.find((a) => a.id === lot.auctionId)) ||
+      AUCTIONS.find((a) => a.title === bid.auction) ||
+      AUCTIONS[0];
+    navigation.navigate('LotDetail', { lot, auction });
+  };
 
   const counts = {
     All:     MY_BIDS.length,
@@ -52,12 +74,7 @@ export default function MyBidsScreen() {
         renderItem={({ item }) => (
           <BidCard
             bid={item}
-            onIncreaseBid={() =>
-              Alert.alert(
-                'Increase Bid',
-                `Current bid is $${item.currentBid.toFixed(2)}. Navigate to the lot to place a higher bid.`
-              )
-            }
+            onIncreaseBid={() => navigateToLot(item)}
           />
         )}
         contentContainerStyle={styles.list}

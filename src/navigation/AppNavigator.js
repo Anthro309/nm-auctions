@@ -43,7 +43,9 @@ function AuctionStackNav() {
 function BidsStackNav() {
   return (
     <BidsStack.Navigator screenOptions={SO}>
-      <BidsStack.Screen name="MyBidsMain" component={MyBidsScreen} />
+      <BidsStack.Screen name="MyBidsMain"    component={MyBidsScreen} />
+      <BidsStack.Screen name="AuctionDetail" component={AuctionDetailScreen} />
+      <BidsStack.Screen name="LotDetail"     component={LotDetailScreen} />
     </BidsStack.Navigator>
   );
 }
